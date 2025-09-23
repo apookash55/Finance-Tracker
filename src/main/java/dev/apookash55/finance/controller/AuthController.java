@@ -6,6 +6,7 @@ import dev.apookash55.finance.dto.RegisterUserRequest;
 import dev.apookash55.finance.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public LoginUserResponse loginUser(@Valid @RequestBody LoginUserRequest request) {
-        return authService.loginUser(request);
+    public ResponseEntity<LoginUserResponse> loginUser(@Valid @RequestBody LoginUserRequest request) {
+        return ResponseEntity.ok(authService.loginUser(request));
     }
 }
