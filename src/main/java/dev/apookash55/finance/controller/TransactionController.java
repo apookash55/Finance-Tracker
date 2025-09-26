@@ -23,9 +23,11 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TransactionInfo>> getTransactions(Authentication authentication) {
+    public ResponseEntity<List<TransactionInfo>> getTransactions(@RequestParam(required = false) Long accountId,
+                                                                 @RequestParam(required = false) Long categoryId,
+                                                                 Authentication authentication) {
         String username = authentication.getName();
-        List<TransactionInfo> transactions = transactionService.getTransactions(username);
+        List<TransactionInfo> transactions = transactionService.getTransactions(accountId, categoryId, username);
         return ResponseEntity.ok(transactions);
     }
 

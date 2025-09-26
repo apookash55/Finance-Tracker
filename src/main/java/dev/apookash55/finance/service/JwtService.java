@@ -3,22 +3,20 @@ package dev.apookash55.finance.service;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
-    @Value("${jwt.secret}")
     private final String secretKey;
-    private static final int EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
+    private static final int EXPIRATION_TIME = 1000 * 60 * 60;
 
-    public JwtService(@Value("${jwt.secret}") String secretKey) {
-        if (secretKey == null || secretKey.length() < 32) {
-            throw new IllegalStateException("JWT secret key must be at least 32 characters long");
-        }
-        this.secretKey = secretKey;
+    JwtService() {
+        Random random = new Random();
+        this.secretKey = random.ints(64).mapToObj(Integer::toHexString).collect(Collectors.joining());
     }
 
     public String generateToken(String username) {
@@ -26,7 +24,7 @@ public class JwtService {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS512)
                 .compact();
     }
 
