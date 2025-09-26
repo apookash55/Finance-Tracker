@@ -48,7 +48,7 @@ public class TransactionService {
     public List<TransactionInfo> getTransactions(String username) {
         User user = getUser(username);
 
-        List<Transaction> transactions = transactionRepository.findByUser(user);
+        List<Transaction> transactions = user.getTransactions();
         return transactions.stream().map(transaction -> new TransactionInfo(transaction.getId(), transaction.getCategory().getId(), transaction.getAccount().getId(), transaction.getAmount().doubleValue(), transaction.getTxnDate().toString(), transaction.getDescription())).toList();
     }
 

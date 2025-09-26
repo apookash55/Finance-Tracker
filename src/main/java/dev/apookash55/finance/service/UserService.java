@@ -37,8 +37,9 @@ public class UserService {
 
     @Transactional
     public void deleteUser(String username) {
-        Credential credential = credentialRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(INVALID_USERNAME));
-        User user = credential.getUser();
-        userRepository.delete(user);
+        Credential credential = credentialRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(INVALID_USERNAME));
+        credentialRepository.delete(credential);
+        userRepository.delete(credential.getUser());
     }
 }

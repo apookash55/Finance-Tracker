@@ -12,10 +12,12 @@ public class AccountInfo {
 
     @NotBlank
     private String name;
+
     @NotNull
     private AccountType type;
-    @NotBlank
+
     private String currency;
-    @NotBlank
+
+    @NotNull
     private Double balance;
 }

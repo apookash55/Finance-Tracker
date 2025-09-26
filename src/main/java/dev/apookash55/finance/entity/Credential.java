@@ -7,7 +7,9 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "credentials", schema = "auth")
+@Table(name = "credentials", schema = "auth", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"username"}, name = "uk_credentials_username")
+})
 @Getter
 @Setter
 public class Credential {
@@ -15,14 +17,14 @@ public class Credential {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, length = 50)
     private String username;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password_hash", nullable = false, length = 100)
     private String passwordHash;
 
     @Column(name = "last_login")

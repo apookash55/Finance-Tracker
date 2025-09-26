@@ -37,7 +37,7 @@ public class AccountService {
     public List<AccountInfo> getAccounts(String username) {
         User user = getUser(username);
 
-        List<Account> accounts = accountRepository.findByUser(user);
+        List<Account> accounts = user.getAccounts();
         return accounts.stream().map(account -> new AccountInfo(account.getId(), account.getName(), AccountType.valueOf(account.getType()), account.getCurrency(), account.getBalance().doubleValue())).toList();
     }
 

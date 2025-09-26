@@ -34,7 +34,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public List<CategoryInfo> getCategories(String username) {
         User user = getUser(username);
-        List<Category> categories = categoryRepository.findByUser(user);
+        List<Category> categories = user.getCategories();
         return categories.stream().map(category -> new CategoryInfo(category.getId(), category.getName(), CategoryType.valueOf(category.getType()))).toList();
     }
 
