@@ -9,16 +9,19 @@ import dev.apookash55.finance.repository.CredentialRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccountService {
     private final AccountRepository accountRepository;
     private final CredentialRepository credentialRepository;
 
+    @Transactional
     public void createAccount(AccountInfo request, String username) {
         User user = getUser(username);
 
@@ -30,6 +33,7 @@ public class AccountService {
         accountRepository.save(account);
     }
 
+    @Transactional(readOnly = true)
     public List<AccountInfo> getAccounts(String username) {
         User user = getUser(username);
 
@@ -37,11 +41,13 @@ public class AccountService {
         return accounts.stream().map(account -> new AccountInfo(account.getId(), account.getName(), AccountType.valueOf(account.getType()), account.getCurrency(), account.getBalance().doubleValue())).toList();
     }
 
+    @Transactional(readOnly = true)
     public AccountInfo getAccount(Long accountId, String username) {
         Account account = verifyAccount(accountId, username);
         return new AccountInfo(account.getId(), account.getName(), AccountType.valueOf(account.getType()), account.getCurrency(), account.getBalance().doubleValue());
     }
 
+    @Transactional
     public void updateAccount(Long accountId, AccountInfo request, String username) {
         Account account = verifyAccount(accountId, username);
         account.setName(request.getName());
@@ -50,6 +56,7 @@ public class AccountService {
         accountRepository.save(account);
     }
 
+    @Transactional
     public void deleteAccount(Long accountId, String username) {
         Account account = verifyAccount(accountId, username);
         accountRepository.delete(account);

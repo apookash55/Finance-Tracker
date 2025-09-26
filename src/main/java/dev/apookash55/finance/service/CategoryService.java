@@ -9,15 +9,18 @@ import dev.apookash55.finance.repository.CredentialRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CredentialRepository credentialRepository;
 
+    @Transactional
     public void createCategory(CategoryInfo request, String username) {
         User user = getUser(username);
 
@@ -28,17 +31,20 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
+    @Transactional(readOnly = true)
     public List<CategoryInfo> getCategories(String username) {
         User user = getUser(username);
         List<Category> categories = categoryRepository.findByUser(user);
         return categories.stream().map(category -> new CategoryInfo(category.getId(), category.getName(), CategoryType.valueOf(category.getType()))).toList();
     }
 
+    @Transactional(readOnly = true)
     public CategoryInfo getCategory(Long id, String username) {
         Category category = verifyCategory(id, username);
         return new CategoryInfo(category.getId(), category.getName(), CategoryType.valueOf(category.getType()));
     }
 
+    @Transactional
     public void updateCategory(CategoryInfo request, String username, Long id) {
         Category category = verifyCategory(id, username);
         category.setName(request.getName());
@@ -46,6 +52,7 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
+    @Transactional
     public void deleteCategory(Long id, String username) {
         Category category = verifyCategory(id, username);
         categoryRepository.delete(category);

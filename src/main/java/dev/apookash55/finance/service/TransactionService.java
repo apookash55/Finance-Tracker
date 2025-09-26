@@ -12,13 +12,14 @@ import dev.apookash55.finance.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class TransactionService {
     private final TransactionRepository transactionRepository;
@@ -26,6 +27,7 @@ public class TransactionService {
     private final CategoryRepository categoryRepository;
     private final CredentialRepository credentialRepository;
 
+    @Transactional
     public void createTransaction(TransactionInfo request, String username) {
         User user = getUser(username);
 
@@ -42,18 +44,21 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    @Transactional(readOnly = true)
     public List<TransactionInfo> getTransactions(String username) {
         User user = getUser(username);
 
         List<Transaction> transactions = transactionRepository.findByUser(user);
-        return transactions.stream().map(transaction -> new TransactionInfo(transaction.getId(), transaction.getCategory().getId(), transaction.getAccount().getId(), transaction.getAmount().doubleValue(), transaction.getTxnDate().toString(), transaction.getDescription())).collect(Collectors.toList());
+        return transactions.stream().map(transaction -> new TransactionInfo(transaction.getId(), transaction.getCategory().getId(), transaction.getAccount().getId(), transaction.getAmount().doubleValue(), transaction.getTxnDate().toString(), transaction.getDescription())).toList();
     }
 
+    @Transactional(readOnly = true)
     public TransactionInfo getTransaction(Long id, String username) {
         Transaction transaction = verifyTransaction(id, username);
         return new TransactionInfo(transaction.getId(), transaction.getCategory().getId(), transaction.getAccount().getId(), transaction.getAmount().doubleValue(), transaction.getTxnDate().toString(), transaction.getDescription());
     }
 
+    @Transactional
     public void updateTransaction(TransactionInfo request, Long id, String username) {
         Transaction transaction = verifyTransaction(id, username);
 
@@ -65,6 +70,7 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    @Transactional
     public void deleteTransaction(Long id, String username) {
         Transaction transaction = verifyTransaction(id, username);
 

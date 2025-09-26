@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AuthService {
     private final JwtService jwtService;
@@ -38,6 +39,7 @@ public class AuthService {
        credentialRepository.save(credential);
     }
 
+    @Transactional
     public LoginUserResponse loginUser(LoginUserRequest request) {
         Credential credential = credentialRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Invalid username or password"));
 
