@@ -1,36 +1,36 @@
 package dev.apookash55.finance.controller;
 
-import dev.apookash55.finance.entity.User;
-import dev.apookash55.finance.repository.UserRepository;
+import dev.apookash55.finance.dto.UserInfoResponse;
+import dev.apookash55.finance.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return ResponseEntity.ok(user);
+    @GetMapping("/me")
+    public ResponseEntity<UserInfoResponse> getMe(Authentication authentication) {
+        String username = authentication.getName();
+        UserInfoResponse userInfo = userService.getUserInfo(username);
+        return ResponseEntity.ok(userInfo);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") Long userId, @RequestBody User user) {
-        User updatedUser = userRepository.findById(userId).map(u -> {
-            u.setFirstName(user.getFirstName());
-            u.setLastName(user.getLastName());
-            u.setEmail(user.getEmail());
-            return userRepository.save(u);
-        }).orElseThrow(() -> new RuntimeException("User not found"));
-        return ResponseEntity.ok(updatedUser);
+    @PutMapping("/me")
+    public ResponseEntity<Void> updateUser(Authentication authentication, @RequestBody UserInfoResponse userInfo) {
+        String username = authentication.getName();
+        userService.updateUser(username, userInfo);
+        return ResponseEntity.ok(null);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable("id") Long userId) {
-        userRepository.deleteById(userId);
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteUser(Authentication authentication) {
+        String username = authentication.getName();
+        userService.deleteUser(username);
+        return ResponseEntity.ok(null);
     }
 }
