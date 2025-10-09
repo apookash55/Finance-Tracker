@@ -21,7 +21,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserInfoResponse getUserInfo(String username) {
         Credential credential = credentialRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(INVALID_USERNAME));
-        return new UserInfoResponse(credential.getUser().getFirstName(), credential.getUser().getLastName(), credential.getUser().getEmail(), credential.getUsername());
+        return new UserInfoResponse(credential.getUser().getFirstName(), credential.getUser().getLastName(), credential.getUser().getEmail(), credential.getUsername(), credential.getLastLogin());
     }
 
     @Transactional
